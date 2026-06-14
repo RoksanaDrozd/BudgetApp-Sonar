@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\.mvn",
+    "\\.mvn\\wrapper",
+    "\\docker",
+    "\\src"
+  ],
+  "PreviewInSolutionExplorer": false
+}
