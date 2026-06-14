@@ -1,6 +1,5 @@
 package pk.rd.pasir_drozd_roksana.websocket;
 
-
 import pk.rd.pasir_drozd_roksana.security.JwtUtil;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -53,5 +52,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                                ServerHttpResponse response,
                                WebSocketHandler wsHandler,
                                Exception exception) {
+        // POPRAWIONE: Dodano komentarz wyjaśniający dla Sonara, dlaczego metoda pozostaje pusta
+        // Logika po uścisku dłoni (handshake) nie jest wymagana w tej konfiguracji bezpieczeństwa.
     }
 }
