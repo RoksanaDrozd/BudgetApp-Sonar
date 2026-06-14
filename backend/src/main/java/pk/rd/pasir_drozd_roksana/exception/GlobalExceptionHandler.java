@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.MethodArgumentNotValidException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +16,9 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // STAŁA DODANA DLA SONARA:
+    private static final String ERROR_KEY = "error";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationException(
@@ -28,37 +31,39 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+    
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleUserAlreadyExists(UserAlreadyExistsException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put(ERROR_KEY, ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
+    
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleEntityNotFound(EntityNotFoundException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put(ERROR_KEY, ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put(ERROR_KEY, ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> handleIllegalState(IllegalStateException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put(ERROR_KEY, ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler({UsernameNotFoundException.class, BadCredentialsException.class})
     public ResponseEntity<Map<String, String>> handleAuthentication(RuntimeException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put(ERROR_KEY, ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 }
