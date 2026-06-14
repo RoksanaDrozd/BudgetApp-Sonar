@@ -9,7 +9,8 @@ import pk.rd.pasir_drozd_roksana.model.User;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant; // DODANY NOWY IMPORT
+import java.time.Instant; // Pozostaje dla Sonara
+import java.util.Date;   // Potrzebne do konwersji dla biblioteki JWT
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,15 +36,15 @@ public class JwtUtil {
         claims.put("id", user.getId());
         claims.put("email", user.getEmail());
 
-        // POPRAWIONE: Użycie nowoczesnego java.time.Instant zamiast staromodnego java.util.Date
+        // POPRAWIONE: Logika oparta na Instant, skonwertowana w bezpieczny dla jjwt sposób
         Instant now = Instant.now();
         Instant expiry = now.plusMillis(EXPIRATION_MS);
 
         return Jwts.builder()
                 .claims(claims)
                 .subject(user.getEmail())
-                .issuedAt(now)
-                .expiration(expiry)
+                .issuedAt(Date.from(now))       // Bezpieczna konwersja Instant -> Date
+                .expiration(Date.from(expiry)) // Bezpieczna konwersja Instant -> Date
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
@@ -64,7 +65,7 @@ public class JwtUtil {
         try {
             extractAllClaims(token);
             return true;
-        } catch (Exception _) { // POPRAWIONE: Zamiana "e" na unnamed pattern "_" (Java 22+)
+        } catch (Exception _) { // Unnamed pattern zostaje, bo to strzał w dziesiątkę
             return false;
         }
     }
