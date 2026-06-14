@@ -9,7 +9,7 @@ import pk.rd.pasir_drozd_roksana.model.User;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Instant; // DODANY NOWY IMPORT
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,11 +35,15 @@ public class JwtUtil {
         claims.put("id", user.getId());
         claims.put("email", user.getEmail());
 
+        // POPRAWIONE: Użycie nowoczesnego java.time.Instant zamiast staromodnego java.util.Date
+        Instant now = Instant.now();
+        Instant expiry = now.plusMillis(EXPIRATION_MS);
+
         return Jwts.builder()
                 .claims(claims)
                 .subject(user.getEmail())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
+                .issuedAt(now)
+                .expiration(expiry)
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
@@ -60,7 +64,7 @@ public class JwtUtil {
         try {
             extractAllClaims(token);
             return true;
-        } catch (Exception e) {
+        } catch (Exception _) { // POPRAWIONE: Zamiana "e" na unnamed pattern "_" (Java 22+)
             return false;
         }
     }
