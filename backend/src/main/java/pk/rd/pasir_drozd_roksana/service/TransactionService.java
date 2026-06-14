@@ -13,10 +13,14 @@ import pk.rd.pasir_drozd_roksana.repository.TransactionRepository;
 import pk.rd.pasir_drozd_roksana.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId; // DODANY IMPORT
 import java.util.List;
 
 @Service
 public class TransactionService {
+
+    // POPRAWIONE: Stała usuwająca powtórzenia Stringów (Critical)
+    private static final String NOT_FOUND_TX_MSG = "Nie znaleziono transakcji o ID ";
 
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
@@ -46,7 +50,7 @@ public class TransactionService {
     public Transaction getTransactionById(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Nie znaleziono transakcji o ID " + id));
+                        NOT_FOUND_TX_MSG + id));
         if (!transaction.getUser().getEmail().equals(getCurrentUser().getEmail())) {
             throw new AccessDeniedException("Nie masz dostępu do tej transakcji");
         }
@@ -60,14 +64,15 @@ public class TransactionService {
         transaction.setTags(transactionDTO.getTags());
         transaction.setNotes(transactionDTO.getNotes());
         transaction.setUser(getCurrentUser());
-        transaction.setTimestamp(LocalDateTime.now());
+        // POPRAWIONE: Jawne określenie strefy czasowej (Info)
+        transaction.setTimestamp(LocalDateTime.now(ZoneId.systemDefault()));
         return transactionRepository.save(transaction);
     }
 
     public Transaction updateTransaction(Long id, TransactionDTO transactionDTO) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Nie znaleziono transakcji o ID " + id));
+                        NOT_FOUND_TX_MSG + id));
         if (!transaction.getUser().getEmail().equals(getCurrentUser().getEmail())) {
             throw new AccessDeniedException("Nie masz dostępu do tej transakcji");
         }
@@ -81,7 +86,7 @@ public class TransactionService {
     public void deleteTransaction(Long id) {
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Nie znaleziono transakcji o ID " + id));
+                        NOT_FOUND_TX_MSG + id));
         if (!transaction.getUser().getEmail().equals(getCurrentUser().getEmail())) {
             throw new AccessDeniedException("Nie masz dostępu do tej transakcji");
         }
@@ -92,7 +97,8 @@ public class TransactionService {
         List<Transaction> userTransactions;
 
         if (days != null) {
-            LocalDateTime from = LocalDateTime.now().minusDays(days.longValue());
+            // POPRAWIONE: Jawne określenie strefy czasowej (Info)
+            LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).minusDays(days.longValue());
             userTransactions = transactionRepository
                     .findAllByUserAndTimestampGreaterThanEqual(user, from);
         } else {
