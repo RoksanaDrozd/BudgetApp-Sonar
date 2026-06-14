@@ -40,9 +40,9 @@ public class JwtUtil {
         return Jwts.builder()
                 .claims(claims)
                 .subject(user.getEmail())
-                // Używamy bezpośrednio Instant, co jest zgodne z najnowszymi standardami jjwt
-                .issuedAt(now)
-                .expiration(expiry)
+                // Konwersja w linii, bez importu java.util.Date na górze pliku
+                .issuedAt(java.util.Date.from(now))
+                .expiration(java.util.Date.from(expiry))
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
