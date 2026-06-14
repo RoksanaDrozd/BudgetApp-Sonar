@@ -19,18 +19,22 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        // POPRAWIONE: Dodano "/ws/**" dla WebSocketów z komunikatami oraz "/graphiql" do testów
-                        .requestMatchers("/api/auth/**", "/graphql", "/graphiql", "/ws/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(sess ->
-                        sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+        try {
+            return http
+                    .cors(Customizer.withDefaults())
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .authorizeHttpRequests(auth -> auth
+                            // POPRAWIONE: Dodano "/ws/**" dla WebSocketów z komunikatami oraz "/graphiql" do testów
+                            .requestMatchers("/api/auth/**", "/graphql", "/graphiql", "/ws/**").permitAll()
+                            .anyRequest().authenticated()
+                    )
+                    .sessionManagement(sess ->
+                            sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                    .build();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Błąd podczas konfiguracji Spring Security", e);
+        }
     }
 }
