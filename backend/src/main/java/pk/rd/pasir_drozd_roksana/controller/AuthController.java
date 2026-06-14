@@ -23,12 +23,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO) {
+    // ZAMIANA ResponseEntity<?> NA ResponseEntity<Object>
+    public ResponseEntity<Object> register(@Valid @RequestBody UserDTO userDTO) {
         return ResponseEntity.ok(userService.register(userDTO));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDto dto) {
+    // ZAMIANA ResponseEntity<?> NA ResponseEntity<Object>
+    public ResponseEntity<Object> login(@Valid @RequestBody LoginDto dto) {
         try {
             String token = userService.login(dto);
             return ResponseEntity.ok(Map.of("token", token));
