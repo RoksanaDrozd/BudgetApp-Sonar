@@ -72,6 +72,9 @@ type Debt {
     debtor: User!
     creditor: User!
     group: Group!
+
+    paidByDebtor: Boolean!
+    confirmedByCreditor: Boolean!
 }
 
 input DebtInput {

@@ -24,7 +24,8 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/graphql").permitAll()
+                        // POPRAWIONE: Dodano "/ws/**" dla WebSocketów z komunikatami oraz "/graphiql" do testów
+                        .requestMatchers("/api/auth/**", "/graphql", "/graphiql", "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess ->
