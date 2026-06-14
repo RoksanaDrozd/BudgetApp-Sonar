@@ -16,6 +16,9 @@ import java.util.List;
 @Service
 public class MembershipService {
 
+    // DODANA STAŁA DLA UCISZENIA SONARA (CRITICAL ISSUE)
+    private static final String NOT_FOUND_GROUP_MSG = "Nie znaleziono grupy o ID: ";
+
     private final MembershipRepository membershipRepository;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
@@ -44,7 +47,7 @@ public class MembershipService {
                         "Nie znaleziono użytkownika o emailu: " + membershipDTO.getUserEmail()));
         Group group = groupRepository.findById(membershipDTO.getGroupId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Nie znaleziono grupy o ID: " + membershipDTO.getGroupId()));
+                        NOT_FOUND_GROUP_MSG + membershipDTO.getGroupId()));
 
         boolean alreadyMember = membershipRepository.findByGroupId(group.getId()).stream()
                 .anyMatch(m -> m.getUser().getId().equals(user.getId()));
@@ -80,7 +83,7 @@ public class MembershipService {
     public void assertCurrentUserIsGroupMember(Long groupId) {
         groupRepository.findById(groupId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Nie znaleziono grupy o ID: " + groupId));
+                        NOT_FOUND_GROUP_MSG + groupId));
         User currentUser = currentUserService.getCurrentUser();
         assertUserIsGroupMember(groupId, currentUser.getId());
     }
@@ -88,7 +91,7 @@ public class MembershipService {
     public void assertCurrentUserIsGroupOwner(Long groupId) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Nie znaleziono grupy o ID: " + groupId));
+                        NOT_FOUND_GROUP_MSG + groupId));
         User currentUser = currentUserService.getCurrentUser();
         if (!group.getOwner().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("Tylko właściciel grupy może wykonać tę operację.");
